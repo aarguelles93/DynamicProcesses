@@ -1,16 +1,15 @@
 package com.uninorte.andresarguelles.dynamicprocesses;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.support.v7.internal.widget.AdapterViewCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -23,10 +22,10 @@ public class MainActivity extends ActionBarActivity {
     private String urlAPI;
 
     ArrayList<Category> categories;
-    ArrayList<String> categoryName;
-    ArrayList<String> urlNext;
 
     HandleJSON obj;
+
+    int selectedCategoryId;
 
 
 
@@ -39,21 +38,19 @@ public class MainActivity extends ActionBarActivity {
 
         // Cuando arranca la app, obtiene las categorías disponibles
         urlAPI = "https://dynamicformapi.herokuapp.com/groups.json";
-        String msg="Connecting to the server...";
-        Toast toast = Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG);
-        toast.show();
+
 
         categories = new ArrayList<Category>();
-        categoryName = new ArrayList<String>();
 
-        obj = new HandleJSON(urlAPI, 1);//EDITAR REMOVER 2do Parametro!!!
+
+        obj = new HandleJSON(urlAPI);
         obj.fetchJSON();
 
         while (!obj.parsingComplete);
 
-        categoryName = obj.getName();
+
         for (int i = 0; i<obj.getId().size(); i++){
-            Category cat = new Category(obj.getId().get(i), obj.getGroup_id().get(i), obj.getName().get(i), obj.getUrlNext().get(i));
+            Category cat = new Category (obj.getGroup_id().get(i), obj.getName().get(i), obj.getInfoURLArray().get(i));
             categories.add(cat);
         }
 
@@ -70,18 +67,32 @@ public class MainActivity extends ActionBarActivity {
                                     int position, long id) {
 
                 Category o = (Category)mListView.getItemAtPosition(position);
-                String str=(String)o.name;//As you are using Default String Adapter
-                Toast.makeText(getApplicationContext(),str,Toast.LENGTH_SHORT).show();
+                selectedCategoryId = o.group_id;
+                displayDialog(o.name,o.group_id, o.name, o.infoUrl);//
             }
         });
+    }
 
+    public void displayDialog(String title, final int category_id, final String name, final String url){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(title)
+                .setPositiveButton(R.string.dialog_access, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
 
+                        String msg = "Cargando";
+                        Toast toast = Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG);
+                        toast.show();
 
+                        Intent navToProcedure = new Intent(MainActivity.this,ProceduresActivity.class);
+                        navToProcedure.putExtra("category_id",category_id );
+                        navToProcedure.putExtra("name", name);
+                        navToProcedure.putExtra("url", url);
+                        startActivity(navToProcedure);
 
-
-        /*TextView tv = new TextView(getApplicationContext());
-        tv.setText("Hola");
-        mLinearLayout.addView(tv);*/
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
 

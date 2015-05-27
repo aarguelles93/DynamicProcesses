@@ -21,18 +21,20 @@ public class HandleJSON {
     * 2 = obtiene todos los procesos
     * 3 = obtiene todos los pasos
     */
-    int typeOfQuery;
+
 
     private ArrayList<Integer> id; // Este es obligatorio en todos los casos
 
-    private ArrayList<String> group_id;
-    private ArrayList<String> procedure_id;
+    private ArrayList<Integer> group_id;
+    private ArrayList<Integer> procedure_id;
     private ArrayList<String> step_id;
     private ArrayList<String> name;
     private ArrayList<String> generalInfoTitle;
     private ArrayList<String> generalInfo;
 
-    private ArrayList<String> urlNext; // Este es obligatorio en todos los casos
+    private ArrayList<String> description;
+
+    private ArrayList<String> infoURLArray; // Este es obligatorio en todos los casos
 
     public volatile boolean parsingComplete = false;
 
@@ -41,19 +43,21 @@ public class HandleJSON {
     /**
      *   Constructor
      */
-    public HandleJSON(String urlAPI,int ToQ){
+    public HandleJSON(String urlAPI){
         this.urlAPI = urlAPI;
-        this.typeOfQuery =ToQ;
+
 
         id = new ArrayList<Integer>();
 
-        group_id = new ArrayList<String>();
+        group_id = new ArrayList<Integer>();
         name = new ArrayList<String>();
         generalInfoTitle = new ArrayList<String>();
         generalInfo = new ArrayList<String>();
 
+        procedure_id = new ArrayList<Integer>();
+        description = new ArrayList<String>();
 
-        urlNext = new ArrayList<String>();
+        infoURLArray = new ArrayList<String>();
     }
 
 
@@ -69,13 +73,22 @@ public class HandleJSON {
         return name;
     }
 
-    public ArrayList<String> getGroup_id() {
+    public ArrayList<Integer> getGroup_id() {
         return group_id;
     }
 
-    public ArrayList<String> getUrlNext() {
-        return urlNext;
+    public ArrayList<Integer> getProcedure_id() {
+        return procedure_id;
     }
+
+    public ArrayList<String> getDescription() {
+        return description;
+    }
+
+    public ArrayList<String> getInfoURLArray() {
+        return infoURLArray;
+    }
+
 
     /**
      * METHODS
@@ -118,14 +131,23 @@ public class HandleJSON {
             for (int i=0; i<tam; i++){
                 item = reader.getJSONObject(i);
                 id.add(item.getInt("id"));
-                urlNext.add(item.getString("url"));
+                infoURLArray.add(item.getString("url"));
                 // Category Query
                 if (!item.has("procedure_id")){
-                    group_id.add(item.getString("group_id"));
+                    group_id.add(item.getInt("group_id"));
                     name.add(item.getString("name"));
+                }//Procedures Query
+                if (item.has("procedure_id") && item.has("group_id")){
+                    group_id.add(item.getInt("group_id"));
+                    procedure_id.add(item.getInt("procedure_id"));
+                    name.add(item.getString("name"));
+                    description.add(item.getString("description"));
+                }
+                //Steps query
+                if (item.has("procedure_id") && !item.has("group_id")){
+
                 }
             }
-
 
             parsingComplete = true;
         }catch (Exception e){

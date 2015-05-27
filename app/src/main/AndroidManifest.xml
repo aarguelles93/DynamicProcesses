@@ -19,6 +19,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ProceduresActivity"
+            android:label="@string/title_activity_procedure"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.uninorte.andresarguelles.dynamicprocesses.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
