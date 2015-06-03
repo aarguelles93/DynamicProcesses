@@ -3,14 +3,13 @@ package com.uninorte.andresarguelles.dynamicprocesses;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -36,7 +35,7 @@ public class ProceduresActivity extends ActionBarActivity {
 
         //Obteniendo por intent los datos de la categoria padre
         Intent intent = getIntent();
-        int category_id = intent.getIntExtra("category_id",-1);
+        int category_id = intent.getIntExtra("category_id", -1);
         String category_name = intent.getStringExtra("name");
         String category_inforUrl = intent.getStringExtra("url");
         parentCategory = new Category(category_id, category_name, category_inforUrl);
@@ -66,23 +65,21 @@ public class ProceduresActivity extends ActionBarActivity {
                 Procedure o = (Procedure)mListViewProcedures.getItemAtPosition(position);
                 selectedProcedureId = o.procedure_id;
 
-                displayDialog(o.name,o.description);//
+                displayDialog(o.name,o.description, o.procedure_id);//
             }
         });
 
     }
 
-    public void displayDialog(String title, String message){
+    public void displayDialog(String title, String message, final int procedure_id){
         AlertDialog.Builder builder = new AlertDialog.Builder(ProceduresActivity.this);
         builder.setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(R.string.dialog_access, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-
-                        String msg = "Cargando";
-                        Toast toast = Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG);
-                        toast.show();
-
+                        Intent navToStep = new Intent(ProceduresActivity.this, StepsActivity.class);
+                        navToStep.putExtra("procedure_id", procedure_id);
+                        startActivity(navToStep);
 
                     }
                 });

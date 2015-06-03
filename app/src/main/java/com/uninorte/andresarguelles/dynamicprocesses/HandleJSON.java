@@ -27,12 +27,16 @@ public class HandleJSON {
 
     private ArrayList<Integer> group_id;
     private ArrayList<Integer> procedure_id;
-    private ArrayList<String> step_id;
+    private ArrayList<Integer> step_id;
     private ArrayList<String> name;
-    private ArrayList<String> generalInfoTitle;
-    private ArrayList<String> generalInfo;
+
 
     private ArrayList<String> description;
+
+    //private ArrayList<String> content;
+    private ArrayList<JSONArray> fields;
+    private ArrayList<JSONArray> decisions;
+    private ArrayList<Integer> typeOfField;
 
     private ArrayList<String> infoURLArray; // Este es obligatorio en todos los casos
 
@@ -51,11 +55,15 @@ public class HandleJSON {
 
         group_id = new ArrayList<Integer>();
         name = new ArrayList<String>();
-        generalInfoTitle = new ArrayList<String>();
-        generalInfo = new ArrayList<String>();
 
         procedure_id = new ArrayList<Integer>();
         description = new ArrayList<String>();
+
+        step_id = new ArrayList<Integer>();
+        //content = new ArrayList<String>();
+        fields = new ArrayList<JSONArray>();
+        decisions = new ArrayList<JSONArray>();
+        typeOfField = new ArrayList<Integer>();
 
         infoURLArray = new ArrayList<String>();
     }
@@ -83,6 +91,26 @@ public class HandleJSON {
 
     public ArrayList<String> getDescription() {
         return description;
+    }
+
+    public ArrayList<Integer> getStep_id() {
+        return step_id;
+    }
+
+    /*public ArrayList<String> getContent() {
+        return content;
+    }*/
+
+    public ArrayList<JSONArray> getFields() {
+        return fields;
+    }
+
+    public ArrayList<JSONArray> getDecisions() {
+        return decisions;
+    }
+
+    public ArrayList<Integer> getTypeOfField() {
+        return typeOfField;
     }
 
     public ArrayList<String> getInfoURLArray() {
@@ -144,8 +172,17 @@ public class HandleJSON {
                     description.add(item.getString("description"));
                 }
                 //Steps query
-                if (item.has("procedure_id") && !item.has("group_id")){
-
+                if (item.has("step_id")){
+                    step_id.add(item.getInt("step_id"));
+                    procedure_id.add(item.getInt("procedure_id"));
+                    //content.add(item.getString("content"));
+                    JSONObject jContent = new JSONObject(item.getString("content"));
+                    JSONArray jFields = jContent.getJSONArray("Fields");
+                    fields.add(jFields);
+                    JSONObject field = jFields.getJSONObject(0);
+                    typeOfField.add(field.getInt("field_type"));
+                    JSONArray jDecisions = jContent.getJSONArray("Decisions");
+                    decisions.add(jDecisions);
                 }
             }
 
